@@ -127,6 +127,7 @@
             text-align: center;
             pointer-events: all;
             animation: fadeIn 0.3s ease-out;
+            overflow-y: auto;
         }
 
         .game-over-screen.show {
@@ -134,12 +135,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .game-over-title {
@@ -152,14 +149,8 @@
         }
 
         @keyframes scaleIn {
-            from {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .final-score {
@@ -187,16 +178,12 @@
         }
 
         @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
-        .restart-btn {
-            margin-top: 30px;
+        .restart-btn, .shop-btn {
+            margin-top: 15px;
             padding: 15px 40px;
             font-size: 18px;
             font-weight: bold;
@@ -212,12 +199,12 @@
             pointer-events: all;
         }
 
-        .restart-btn:hover {
+        .restart-btn:hover, .shop-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
         }
 
-        .restart-btn:active {
+        .restart-btn:active, .shop-btn:active {
             transform: scale(0.95);
         }
 
@@ -233,6 +220,181 @@
             z-index: 11;
             pointer-events: none;
             text-align: center;
+        }
+
+        .shop-button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ffaa00 0%, #ff8800 100%);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 15;
+            box-shadow: 0 0 20px rgba(255, 170, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .shop-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 170, 0, 0.8);
+        }
+
+        .shop-coins {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 170, 0, 0.2);
+            border: 2px solid #ffaa00;
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: #ffaa00;
+            font-weight: bold;
+            z-index: 11;
+            pointer-events: none;
+            font-size: 14px;
+        }
+
+        .shop-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            pointer-events: all;
+        }
+
+        .shop-overlay.show {
+            display: flex;
+        }
+
+        .shop-panel {
+            background: linear-gradient(135deg, #1a1f3a 0%, #0f1229 100%);
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease-out;
+            color: #fff;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .shop-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #ffaa00;
+            text-shadow: 0 0 20px #ffaa00;
+        }
+
+        .shop-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #667eea;
+            border: none;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .shop-close:hover {
+            transform: scale(1.1);
+        }
+
+        .shop-category {
+            margin-bottom: 25px;
+        }
+
+        .shop-category-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .shop-item {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .shop-item:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .shop-item.owned {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .shop-item.owned .owned-badge {
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .shop-item-preview {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .shop-item-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .shop-item-price {
+            font-size: 12px;
+            color: #ffaa00;
+            font-weight: bold;
+        }
+
+        .shop-item.owned .shop-item-price {
+            color: #00ff88;
         }
 
         .level-up {
@@ -251,28 +413,38 @@
         }
 
         @keyframes levelUpAnim {
-            0% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(0.5);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -100%) scale(1.5);
-            }
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+            100% { opacity: 0; transform: translate(-50%, -100%) scale(1.5); }
+        }
+
+        .purchase-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+            color: #000;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-weight: bold;
+            z-index: 300;
+            animation: notificationPop 0.6s ease-out;
+            pointer-events: none;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.8);
+        }
+
+        @keyframes notificationPop {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
         }
 
         @media (max-width: 600px) {
-            .score-value {
-                font-size: 28px;
-            }
-
-            .game-over-title {
-                font-size: 36px;
-            }
-
-            .final-score {
-                font-size: 28px;
-            }
+            .score-value { font-size: 28px; }
+            .game-over-title { font-size: 36px; }
+            .final-score { font-size: 28px; }
+            .shop-panel { margin: 20px; max-width: 100%; }
+            .shop-items { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -280,6 +452,7 @@
     <div class="container">
         <canvas id="gameCanvas"></canvas>
         <div class="ui-overlay">
+            <div class="shop-coins" id="coinsDisplay">💰 0</div>
             <div class="score-container">
                 <div class="score-label">Score</div>
                 <div class="score-value" id="score">0</div>
@@ -290,6 +463,7 @@
             </div>
             <div class="difficulty-indicator" id="difficulty">Level 1</div>
             <div class="instruction" id="instruction">TAP TO START</div>
+            <button class="shop-button" id="shopButton" style="display: none;">🛍️</button>
         </div>
 
         <div class="game-over-screen" id="gameOverScreen">
@@ -297,12 +471,59 @@
             <div class="final-score-label">Final Score</div>
             <div class="final-score" id="finalScore">0</div>
             <div class="new-best" id="newBest" style="display: none;">🎉 NEW BEST!</div>
+            <div id="earnedCoins" style="font-size: 20px; color: #ffaa00; margin-bottom: 20px; display: none;"></div>
             <button class="restart-btn" id="restartBtn">Play Again</button>
+            <button class="shop-btn" id="shopBtnGameOver">Customize Ball</button>
+        </div>
+    </div>
+
+    <div class="shop-overlay" id="shopOverlay">
+        <button class="shop-close" id="shopClose">✕</button>
+        <div class="shop-panel">
+            <div class="shop-title">⚪ BALL SHOP</div>
+            <div class="shop-category">
+                <div class="shop-category-title">Colors</div>
+                <div class="shop-items" id="colorItems"></div>
+            </div>
+            <div class="shop-category">
+                <div class="shop-category-title">Patterns</div>
+                <div class="shop-items" id="patternItems"></div>
+            </div>
+            <div class="shop-category">
+                <div class="shop-category-title">Effects</div>
+                <div class="shop-items" id="effectItems"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Game Configuration
+        const SHOP_ITEMS = {
+            colors: [
+                { id: 'green', name: 'Classic Green', emoji: '🟢', cost: 0, preset: true, color: '#00ff88' },
+                { id: 'blue', name: 'Ocean Blue', emoji: '🔵', cost: 50, color: '#00aaff' },
+                { id: 'pink', name: 'Hot Pink', emoji: '🩷', cost: 75, color: '#ff1493' },
+                { id: 'purple', name: 'Purple Haze', emoji: '🟣', cost: 75, color: '#dd00ff' },
+                { id: 'red', name: 'Fire Red', emoji: '🔴', cost: 100, color: '#ff3333' },
+                { id: 'yellow', name: 'Golden', emoji: '🟡', cost: 100, color: '#ffdd00' },
+            ],
+            patterns: [
+                { id: 'solid', name: 'Solid', emoji: '⚫', cost: 0, preset: true, pattern: 'solid' },
+                { id: 'glow', name: 'Glowing', emoji: '✨', cost: 60, pattern: 'glow' },
+                { id: 'rainbow', name: 'Rainbow', emoji: '🌈', cost: 150, pattern: 'rainbow' },
+                { id: 'matrix', name: 'Matrix', emoji: '🟩', cost: 120, pattern: 'matrix' },
+                { id: 'liquid', name: 'Liquid', emoji: '💧', cost: 100, pattern: 'liquid' },
+                { id: 'fire', name: 'Fire Trail', emoji: '🔥', cost: 140, pattern: 'fire' },
+            ],
+            effects: [
+                { id: 'none', name: 'None', emoji: '🚫', cost: 0, preset: true, effect: 'none' },
+                { id: 'trail', name: 'Trail', emoji: '➡️', cost: 80, effect: 'trail' },
+                { id: 'pulse', name: 'Pulse', emoji: '💓', cost: 70, effect: 'pulse' },
+                { id: 'spin', name: 'Spin', emoji: '🌀', cost: 90, effect: 'spin' },
+                { id: 'sparkle', name: 'Sparkle', emoji: '⭐', cost: 110, effect: 'sparkle' },
+                { id: 'shadow', name: 'Shadow', emoji: '👻', cost: 85, effect: 'shadow' },
+            ]
+        };
+
         const CONFIG = {
             BALL_RADIUS: 15,
             SPIKE_WIDTH: 20,
@@ -313,39 +534,51 @@
             PARTICLE_COUNT: 20,
             DIFFICULTY_INTERVAL: 10000,
             SCREEN_SHAKE_DURATION: 150,
+            COINS_PER_POINT: 0.5,
         };
 
-        // Game State
         let gameState = {
             isRunning: false,
             isPaused: false,
             score: 0,
             bestScore: localStorage.getItem('bestScore') || 0,
+            coins: localStorage.getItem('coins') || 0,
             elapsedTime: 0,
             shakeIntensity: 0,
             level: 1,
             speedMultiplier: 1,
+            ballCustomization: {
+                color: localStorage.getItem('ballColor') || 'green',
+                pattern: localStorage.getItem('ballPattern') || 'solid',
+                effect: localStorage.getItem('ballEffect') || 'none',
+            },
+            ownedItems: JSON.parse(localStorage.getItem('ownedItems')) || { colors: ['green'], patterns: ['solid'], effects: ['none'] },
         };
 
-        // Canvas setup
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
 
-        // Game objects
         let ball = null;
         let spikes = [];
         let particles = [];
         let gameStartTime = 0;
+        let ballTrail = [];
 
-        // Initialize
         document.getElementById('bestScore').textContent = gameState.bestScore;
+        document.getElementById('coinsDisplay').textContent = `💰 ${Math.floor(gameState.coins)}`;
         document.getElementById('restartBtn').addEventListener('click', startGame);
+        document.getElementById('shopBtnGameOver').addEventListener('click', openShop);
+        document.getElementById('shopButton').addEventListener('click', openShop);
+        document.getElementById('shopClose').addEventListener('click', closeShop);
+        document.getElementById('shopOverlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('shopOverlay')) closeShop();
+        });
+
         canvas.addEventListener('click', handleCanvasClick);
         canvas.addEventListener('touchstart', handleCanvasClick);
 
-        // Ball class
         class Ball {
             constructor() {
                 this.x = canvas.width / 2;
@@ -354,6 +587,9 @@
                 this.vy = 0;
                 this.radius = CONFIG.BALL_RADIUS;
                 this.isAlive = true;
+                this.rotation = 0;
+                this.rotationSpeed = 0;
+                this.pulsePhase = 0;
             }
 
             update() {
@@ -362,8 +598,9 @@
                 this.vy += CONFIG.GRAVITY;
                 this.x += this.vx;
                 this.y += this.vy;
+                this.rotation += this.rotationSpeed;
+                this.pulsePhase += 0.05;
 
-                // Bounce off walls
                 if (this.x - this.radius < 0) {
                     this.x = this.radius;
                     this.vx *= -0.8;
@@ -373,18 +610,15 @@
                     this.vx *= -0.8;
                 }
 
-                // Bounce off bottom
                 if (this.y + this.radius > canvas.height) {
                     this.y = canvas.height - this.radius;
                     this.vy = -Math.abs(this.vy) * 0.85;
                 }
 
-                // Death if ball falls off top
                 if (this.y + this.radius < 0) {
                     this.isAlive = false;
                 }
 
-                // Check collision with spikes
                 for (let spike of spikes) {
                     if (this.collidesWith(spike)) {
                         this.isAlive = false;
@@ -409,30 +643,139 @@
             }
 
             draw() {
-                // Glow effect
+                if (gameState.ballCustomization.effect === 'trail') {
+                    ballTrail.push({ x: this.x, y: this.y, age: 0 });
+                    if (ballTrail.length > 15) ballTrail.shift();
+                    for (let i = 0; i < ballTrail.length; i++) {
+                        const point = ballTrail[i];
+                        const alpha = 1 - (point.age / 15);
+                        ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.3})`;
+                        ctx.beginPath();
+                        ctx.arc(point.x, point.y, this.radius * (1 - point.age / 15), 0, Math.PI * 2);
+                        ctx.fill();
+                        point.age++;
+                    }
+                }
+
+                const colorItem = SHOP_ITEMS.colors.find(c => c.id === gameState.ballCustomization.color);
+                const ballColor = colorItem.color;
+
+                if (gameState.ballCustomization.effect === 'shadow') {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                    ctx.beginPath();
+                    ctx.arc(this.x + 3, this.y + 3, this.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
                 const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
-                gradient.addColorStop(0, 'rgba(0, 255, 136, 0.8)');
-                gradient.addColorStop(1, 'rgba(0, 255, 136, 0.2)');
+                gradient.addColorStop(0, ballColor.replace(/[^,]+$/, '0.8)').replace('rgb', 'rgba'));
+                gradient.addColorStop(1, ballColor.replace(/[^,]+$/, '0.2)').replace('rgb', 'rgba'));
                 ctx.fillStyle = gradient;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius + 5, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Ball
-                ctx.fillStyle = '#00ff88';
+                if (gameState.ballCustomization.pattern === 'glow') {
+                    for (let i = 0; i < 3; i++) {
+                        ctx.strokeStyle = ballColor.replace(/[^,]+$/, `${(0.5 - i * 0.15)})`).replace('rgb', 'rgba');
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.radius + i * 8, 0, Math.PI * 2);
+                        ctx.stroke();
+                    }
+                } else if (gameState.ballCustomization.pattern === 'rainbow') {
+                    const colors = ['#ff0000', '#ff7700', '#ffff00', '#00ff00', '#0000ff', '#7700ff'];
+                    for (let i = 0; i < colors.length; i++) {
+                        ctx.fillStyle = colors[i];
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.radius * (0.6 + (i * 0.05)), 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                } else if (gameState.ballCustomization.pattern === 'matrix') {
+                    ctx.fillStyle = ballColor;
+                    for (let i = 0; i < 8; i++) {
+                        const angle = (i / 8) * Math.PI * 2 + this.rotation;
+                        const x = this.x + Math.cos(angle) * (this.radius * 0.6);
+                        const y = this.y + Math.sin(angle) * (this.radius * 0.6);
+                        ctx.fillRect(x - 3, y - 3, 6, 6);
+                    }
+                } else if (gameState.ballCustomization.pattern === 'liquid') {
+                    ctx.fillStyle = ballColor.replace(/[^,]+$/, '0.7)').replace('rgb', 'rgba');
+                    ctx.beginPath();
+                    for (let i = 0; i < 20; i++) {
+                        const angle = (i / 20) * Math.PI * 2;
+                        const wave = Math.sin(angle * 3 + this.pulsePhase) * 3;
+                        const x = this.x + Math.cos(angle) * (this.radius + wave);
+                        const y = this.y + Math.sin(angle) * (this.radius + wave);
+                        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                } else if (gameState.ballCustomization.pattern === 'fire') {
+                    ctx.fillStyle = '#ff3333';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius * 0.8, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#ffaa00';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius * 0.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.fillStyle = ballColor;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Shine
+                if (gameState.ballCustomization.effect === 'pulse') {
+                    const pulse = Math.sin(this.pulsePhase) * 0.3 + 0.7;
+                    ctx.strokeStyle = ballColor.replace(/[^,]+$/, `${pulse * 0.5})`).replace('rgb', 'rgba');
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius + pulse * 5, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
+                if (gameState.ballCustomization.effect === 'spin') {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotation);
+                    ctx.strokeStyle = ballColor;
+                    ctx.lineWidth = 2;
+                    for (let i = 0; i < 4; i++) {
+                        ctx.beginPath();
+                        ctx.arc(0, 0, this.radius * 0.5, 0, Math.PI * 2);
+                        ctx.stroke();
+                        ctx.rotate(Math.PI / 2);
+                    }
+                    ctx.restore();
+                }
+
+                if (gameState.ballCustomization.effect === 'sparkle') {
+                    for (let i = 0; i < 4; i++) {
+                        const angle = (i / 4) * Math.PI * 2 + this.pulsePhase;
+                        const x = this.x + Math.cos(angle) * (this.radius + 15);
+                        const y = this.y + Math.sin(angle) * (this.radius + 15);
+                        ctx.fillStyle = ballColor;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 3, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
                 ctx.beginPath();
                 ctx.arc(this.x - 5, this.y - 5, 5, 0, Math.PI * 2);
                 ctx.fill();
+
+                if (gameState.ballCustomization.effect === 'spin') {
+                    this.rotationSpeed = 0.1;
+                } else {
+                    this.rotationSpeed = 0;
+                }
             }
         }
 
-        // Spike class
         class Spike {
             constructor() {
                 this.width = CONFIG.SPIKE_WIDTH;
@@ -450,7 +793,6 @@
                 this.y += this.vy;
                 this.rotation += this.rotationSpeed;
 
-                // Bounce off walls
                 if (this.x < 0 || this.x + this.width > canvas.width) {
                     this.vx *= -1;
                 }
@@ -458,7 +800,6 @@
                     this.vy *= -1;
                 }
 
-                // Keep in bounds
                 this.x = Math.max(0, Math.min(this.x, canvas.width - this.width));
                 this.y = Math.max(0, Math.min(this.y, canvas.height - this.height));
             }
@@ -468,14 +809,12 @@
                 ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
                 ctx.rotate(this.rotation);
 
-                // Spike gradient
                 const gradient = ctx.createLinearGradient(0, -this.height / 2, 0, this.height / 2);
                 gradient.addColorStop(0, '#ff4444');
                 gradient.addColorStop(0.5, '#ff2222');
                 gradient.addColorStop(1, '#cc0000');
                 ctx.fillStyle = gradient;
 
-                // Draw spike shape
                 ctx.beginPath();
                 ctx.moveTo(0, -this.height / 2);
                 ctx.lineTo(this.width / 2, this.height / 2);
@@ -483,7 +822,6 @@
                 ctx.closePath();
                 ctx.fill();
 
-                // Outline
                 ctx.strokeStyle = '#ff7777';
                 ctx.lineWidth = 2;
                 ctx.stroke();
@@ -492,7 +830,6 @@
             }
         }
 
-        // Particle class
         class Particle {
             constructor(x, y, vx, vy, color) {
                 this.x = x;
@@ -520,13 +857,13 @@
             }
         }
 
-        // Effects
         function createBounceEffect(x, y) {
             for (let i = 0; i < 8; i++) {
                 const angle = (i / 8) * Math.PI * 2;
                 const vx = Math.cos(angle) * 4;
                 const vy = Math.sin(angle) * 4;
-                particles.push(new Particle(x, y, vx, vy, 'rgb(0, 255, 136)'));
+                const colorItem = SHOP_ITEMS.colors.find(c => c.id === gameState.ballCustomization.color);
+                particles.push(new Particle(x, y, vx, vy, colorItem.color));
             }
         }
 
@@ -554,7 +891,79 @@
             }
         }
 
-        // Game functions
+        function initializeShop() {
+            const categories = ['colors', 'patterns', 'effects'];
+            categories.forEach(category => {
+                const container = document.getElementById(`${category}Items`);
+                container.innerHTML = '';
+                SHOP_ITEMS[category].forEach(item => {
+                    const isOwned = gameState.ownedItems[category].includes(item.id);
+                    const isSelected = gameState.ballCustomization[category === 'colors' ? 'color' : category === 'patterns' ? 'pattern' : 'effect'] === item.id;
+                    
+                    const itemEl = document.createElement('div');
+                    itemEl.className = `shop-item ${isOwned ? 'owned' : ''} ${isSelected ? 'selected' : ''}`;
+                    itemEl.style.borderColor = isSelected ? '#00ff88' : isOwned ? '#667eea' : '#667eea';
+                    
+                    itemEl.innerHTML = `
+                        <div class="shop-item-preview">${item.emoji}</div>
+                        <div class="shop-item-name">${item.name}</div>
+                        <div class="shop-item-price">
+                            ${isOwned ? '<span class="owned-badge">OWNED</span>' : `💰 ${item.cost}`}
+                        </div>
+                    `;
+                    
+                    itemEl.addEventListener('click', () => {
+                        if (isOwned || item.cost === 0) {
+                            selectItem(category, item.id, item);
+                        } else if (gameState.coins >= item.cost) {
+                            purchaseItem(category, item.id, item.cost, item);
+                        }
+                    });
+                    
+                    container.appendChild(itemEl);
+                });
+            });
+        }
+
+        function selectItem(category, itemId, item) {
+            const key = category === 'colors' ? 'color' : category === 'patterns' ? 'pattern' : 'effect';
+            gameState.ballCustomization[key] = itemId;
+            localStorage.setItem(`ball${key.charAt(0).toUpperCase() + key.slice(1)}`, itemId);
+            initializeShop();
+        }
+
+        function purchaseItem(category, itemId, cost, item) {
+            gameState.coins -= cost;
+            localStorage.setItem('coins', gameState.coins);
+            
+            if (!gameState.ownedItems[category]) gameState.ownedItems[category] = [];
+            gameState.ownedItems[category].push(itemId);
+            localStorage.setItem('ownedItems', JSON.stringify(gameState.ownedItems));
+            
+            document.getElementById('coinsDisplay').textContent = `💰 ${Math.floor(gameState.coins)}`;
+            
+            selectItem(category, itemId, item);
+            
+            showPurchaseNotification(`Purchased ${item.name}!`);
+        }
+
+        function openShop() {
+            document.getElementById('shopOverlay').classList.add('show');
+            initializeShop();
+        }
+
+        function closeShop() {
+            document.getElementById('shopOverlay').classList.remove('show');
+        }
+
+        function showPurchaseNotification(text) {
+            const notif = document.createElement('div');
+            notif.className = 'purchase-notification';
+            notif.textContent = text;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 600);
+        }
+
         function startGame() {
             gameState.isRunning = true;
             gameState.score = 0;
@@ -566,20 +975,29 @@
             ball = new Ball();
             spikes = [];
             particles = [];
+            ballTrail = [];
 
-            // Create initial spikes
             for (let i = 0; i < 3; i++) {
                 spikes.push(new Spike());
             }
 
             document.getElementById('gameOverScreen').classList.remove('show');
             document.getElementById('instruction').style.display = 'none';
+            document.getElementById('shopButton').style.display = 'none';
+            document.getElementById('coinsDisplay').style.display = 'none';
             loop();
         }
 
         function endGame() {
             gameState.isRunning = false;
             document.getElementById('instruction').style.display = 'block';
+            document.getElementById('shopButton').style.display = 'flex';
+            document.getElementById('coinsDisplay').style.display = 'block';
+
+            const earnedCoins = Math.floor(gameState.score * CONFIG.COINS_PER_POINT);
+            gameState.coins = parseFloat(gameState.coins) + earnedCoins;
+            localStorage.setItem('coins', gameState.coins);
+            document.getElementById('coinsDisplay').textContent = `💰 ${Math.floor(gameState.coins)}`;
 
             const isNewBest = gameState.score > gameState.bestScore;
             if (isNewBest) {
@@ -589,6 +1007,8 @@
             }
 
             document.getElementById('finalScore').textContent = gameState.score;
+            document.getElementById('earnedCoins').textContent = `+💰 ${earnedCoins}`;
+            document.getElementById('earnedCoins').style.display = 'block';
             document.getElementById('newBest').style.display = isNewBest ? 'block' : 'none';
             document.getElementById('gameOverScreen').classList.add('show');
         }
@@ -610,7 +1030,6 @@
                 gameState.level = level;
                 gameState.speedMultiplier = 1 + (level - 1) * 0.15;
 
-                // Create level up animation
                 const levelUpEl = document.createElement('div');
                 levelUpEl.className = 'level-up';
                 levelUpEl.textContent = `LEVEL ${level}!`;
@@ -619,7 +1038,6 @@
 
                 setTimeout(() => levelUpEl.remove(), 800);
 
-                // Increase number of spikes
                 if (spikes.length < 3 + Math.floor((level - 1) / 2)) {
                     spikes.push(new Spike());
                 }
@@ -631,11 +1049,9 @@
         function loop() {
             if (!gameState.isRunning) return;
 
-            // Clear canvas
             ctx.fillStyle = '#0a0e27';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw grid background
             ctx.strokeStyle = 'rgba(102, 126, 234, 0.1)';
             ctx.lineWidth = 1;
             for (let i = 0; i < canvas.width; i += 50) {
@@ -651,10 +1067,8 @@
                 ctx.stroke();
             }
 
-            // Update game time
             gameState.elapsedTime = Date.now() - gameStartTime;
 
-            // Update and draw
             ball.update();
             ball.draw();
 
@@ -682,13 +1096,15 @@
             requestAnimationFrame(loop);
         }
 
-        // Handle window resize
         window.addEventListener('resize', () => {
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
         });
 
-        // Initialize
+        if (typeof gameState.coins === 'string') {
+            gameState.coins = parseFloat(gameState.coins);
+        }
+
         updateUI();
         loop();
     </script>
