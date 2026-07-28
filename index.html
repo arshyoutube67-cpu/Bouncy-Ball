@@ -322,6 +322,7 @@
             justify-content: center;
             align-items: center;
             transition: all 0.3s ease;
+            z-index: 201;
         }
 
         .shop-close:hover {
@@ -499,7 +500,7 @@
     <script>
         const SHOP_ITEMS = {
             colors: [
-                { id: 'green', name: 'Classic Green', emoji: '🟢', cost: 0, preset: true, color: '#00ff88' },
+                { id: 'green', name: 'Classic Green', emoji: '🟢', cost: 0, color: '#00ff88' },
                 { id: 'blue', name: 'Ocean Blue', emoji: '🔵', cost: 50, color: '#00aaff' },
                 { id: 'pink', name: 'Hot Pink', emoji: '🩷', cost: 75, color: '#ff1493' },
                 { id: 'purple', name: 'Purple Haze', emoji: '🟣', cost: 75, color: '#dd00ff' },
@@ -507,20 +508,20 @@
                 { id: 'yellow', name: 'Golden', emoji: '🟡', cost: 100, color: '#ffdd00' },
             ],
             patterns: [
-                { id: 'solid', name: 'Solid', emoji: '⚫', cost: 0, preset: true, pattern: 'solid' },
-                { id: 'glow', name: 'Glowing', emoji: '✨', cost: 60, pattern: 'glow' },
-                { id: 'rainbow', name: 'Rainbow', emoji: '🌈', cost: 150, pattern: 'rainbow' },
-                { id: 'matrix', name: 'Matrix', emoji: '🟩', cost: 120, pattern: 'matrix' },
-                { id: 'liquid', name: 'Liquid', emoji: '💧', cost: 100, pattern: 'liquid' },
-                { id: 'fire', name: 'Fire Trail', emoji: '🔥', cost: 140, pattern: 'fire' },
+                { id: 'solid', name: 'Solid', emoji: '⚫', cost: 0 },
+                { id: 'glow', name: 'Glowing', emoji: '✨', cost: 60 },
+                { id: 'rainbow', name: 'Rainbow', emoji: '🌈', cost: 150 },
+                { id: 'matrix', name: 'Matrix', emoji: '🟩', cost: 120 },
+                { id: 'liquid', name: 'Liquid', emoji: '💧', cost: 100 },
+                { id: 'fire', name: 'Fire Trail', emoji: '🔥', cost: 140 },
             ],
             effects: [
-                { id: 'none', name: 'None', emoji: '🚫', cost: 0, preset: true, effect: 'none' },
-                { id: 'trail', name: 'Trail', emoji: '➡️', cost: 80, effect: 'trail' },
-                { id: 'pulse', name: 'Pulse', emoji: '💓', cost: 70, effect: 'pulse' },
-                { id: 'spin', name: 'Spin', emoji: '🌀', cost: 90, effect: 'spin' },
-                { id: 'sparkle', name: 'Sparkle', emoji: '⭐', cost: 110, effect: 'sparkle' },
-                { id: 'shadow', name: 'Shadow', emoji: '👻', cost: 85, effect: 'shadow' },
+                { id: 'none', name: 'None', emoji: '🚫', cost: 0 },
+                { id: 'trail', name: 'Trail', emoji: '➡️', cost: 80 },
+                { id: 'pulse', name: 'Pulse', emoji: '💓', cost: 70 },
+                { id: 'spin', name: 'Spin', emoji: '🌀', cost: 90 },
+                { id: 'sparkle', name: 'Sparkle', emoji: '⭐', cost: 110 },
+                { id: 'shadow', name: 'Shadow', emoji: '👻', cost: 85 },
             ]
         };
 
@@ -537,12 +538,12 @@
             COINS_PER_POINT: 0.5,
         };
 
+        // Initialize game state
         let gameState = {
             isRunning: false,
-            isPaused: false,
             score: 0,
-            bestScore: localStorage.getItem('bestScore') || 0,
-            coins: localStorage.getItem('coins') || 0,
+            bestScore: parseInt(localStorage.getItem('bestScore')) || 0,
+            coins: parseFloat(localStorage.getItem('coins')) || 0,
             elapsedTime: 0,
             shakeIntensity: 0,
             level: 1,
@@ -552,8 +553,22 @@
                 pattern: localStorage.getItem('ballPattern') || 'solid',
                 effect: localStorage.getItem('ballEffect') || 'none',
             },
-            ownedItems: JSON.parse(localStorage.getItem('ownedItems')) || { colors: ['green'], patterns: ['solid'], effects: ['none'] },
+            ownedItems: {
+                colors: ['green'],
+                patterns: ['solid'],
+                effects: ['none']
+            }
         };
+
+        // Load owned items from localStorage
+        let savedOwned = localStorage.getItem('ownedItems');
+        if (savedOwned) {
+            try {
+                gameState.ownedItems = JSON.parse(savedOwned);
+            } catch(e) {
+                gameState.ownedItems = { colors: ['green'], patterns: ['solid'], effects: ['none'] };
+            }
+        }
 
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -566,14 +581,16 @@
         let gameStartTime = 0;
         let ballTrail = [];
 
+        // Initialize UI
         document.getElementById('bestScore').textContent = gameState.bestScore;
         document.getElementById('coinsDisplay').textContent = `💰 ${Math.floor(gameState.coins)}`;
+
         document.getElementById('restartBtn').addEventListener('click', startGame);
         document.getElementById('shopBtnGameOver').addEventListener('click', openShop);
         document.getElementById('shopButton').addEventListener('click', openShop);
         document.getElementById('shopClose').addEventListener('click', closeShop);
         document.getElementById('shopOverlay').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('shopOverlay')) closeShop();
+            if (e.target.id === 'shopOverlay') closeShop();
         });
 
         canvas.addEventListener('click', handleCanvasClick);
@@ -658,7 +675,7 @@
                 }
 
                 const colorItem = SHOP_ITEMS.colors.find(c => c.id === gameState.ballCustomization.color);
-                const ballColor = colorItem.color;
+                const ballColor = colorItem ? colorItem.color : '#00ff88';
 
                 if (gameState.ballCustomization.effect === 'shadow') {
                     ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
@@ -667,17 +684,14 @@
                     ctx.fill();
                 }
 
-                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
-                gradient.addColorStop(0, ballColor.replace(/[^,]+$/, '0.8)').replace('rgb', 'rgba'));
-                gradient.addColorStop(1, ballColor.replace(/[^,]+$/, '0.2)').replace('rgb', 'rgba'));
-                ctx.fillStyle = gradient;
+                ctx.fillStyle = ballColor;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius + 5, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                 ctx.fill();
 
                 if (gameState.ballCustomization.pattern === 'glow') {
                     for (let i = 0; i < 3; i++) {
-                        ctx.strokeStyle = ballColor.replace(/[^,]+$/, `${(0.5 - i * 0.15)})`).replace('rgb', 'rgba');
+                        ctx.strokeStyle = ballColor + (Math.round((0.5 - i * 0.15) * 255)).toString(16).padStart(2, '0');
                         ctx.lineWidth = 2;
                         ctx.beginPath();
                         ctx.arc(this.x, this.y, this.radius + i * 8, 0, Math.PI * 2);
@@ -700,7 +714,8 @@
                         ctx.fillRect(x - 3, y - 3, 6, 6);
                     }
                 } else if (gameState.ballCustomization.pattern === 'liquid') {
-                    ctx.fillStyle = ballColor.replace(/[^,]+$/, '0.7)').replace('rgb', 'rgba');
+                    ctx.fillStyle = ballColor;
+                    ctx.globalAlpha = 0.7;
                     ctx.beginPath();
                     for (let i = 0; i < 20; i++) {
                         const angle = (i / 20) * Math.PI * 2;
@@ -711,6 +726,7 @@
                     }
                     ctx.closePath();
                     ctx.fill();
+                    ctx.globalAlpha = 1;
                 } else if (gameState.ballCustomization.pattern === 'fire') {
                     ctx.fillStyle = '#ff3333';
                     ctx.beginPath();
@@ -722,33 +738,15 @@
                     ctx.fill();
                 }
 
-                ctx.fillStyle = ballColor;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fill();
-
                 if (gameState.ballCustomization.effect === 'pulse') {
                     const pulse = Math.sin(this.pulsePhase) * 0.3 + 0.7;
-                    ctx.strokeStyle = ballColor.replace(/[^,]+$/, `${pulse * 0.5})`).replace('rgb', 'rgba');
+                    ctx.strokeStyle = ballColor;
+                    ctx.globalAlpha = pulse * 0.5;
                     ctx.lineWidth = 2;
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.radius + pulse * 5, 0, Math.PI * 2);
                     ctx.stroke();
-                }
-
-                if (gameState.ballCustomization.effect === 'spin') {
-                    ctx.save();
-                    ctx.translate(this.x, this.y);
-                    ctx.rotate(this.rotation);
-                    ctx.strokeStyle = ballColor;
-                    ctx.lineWidth = 2;
-                    for (let i = 0; i < 4; i++) {
-                        ctx.beginPath();
-                        ctx.arc(0, 0, this.radius * 0.5, 0, Math.PI * 2);
-                        ctx.stroke();
-                        ctx.rotate(Math.PI / 2);
-                    }
-                    ctx.restore();
+                    ctx.globalAlpha = 1;
                 }
 
                 if (gameState.ballCustomization.effect === 'sparkle') {
@@ -793,12 +791,8 @@
                 this.y += this.vy;
                 this.rotation += this.rotationSpeed;
 
-                if (this.x < 0 || this.x + this.width > canvas.width) {
-                    this.vx *= -1;
-                }
-                if (this.y < 0 || this.y + this.height > canvas.height) {
-                    this.vy *= -1;
-                }
+                if (this.x < 0 || this.x + this.width > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y + this.height > canvas.height) this.vy *= -1;
 
                 this.x = Math.max(0, Math.min(this.x, canvas.width - this.width));
                 this.y = Math.max(0, Math.min(this.y, canvas.height - this.height));
@@ -825,7 +819,6 @@
                 ctx.strokeStyle = '#ff7777';
                 ctx.lineWidth = 2;
                 ctx.stroke();
-
                 ctx.restore();
             }
         }
@@ -850,10 +843,12 @@
             }
 
             draw() {
-                ctx.fillStyle = this.color.replace(')', `, ${this.life})`).replace('rgb', 'rgba');
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.life;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
+                ctx.globalAlpha = 1;
             }
         }
 
@@ -863,7 +858,8 @@
                 const vx = Math.cos(angle) * 4;
                 const vy = Math.sin(angle) * 4;
                 const colorItem = SHOP_ITEMS.colors.find(c => c.id === gameState.ballCustomization.color);
-                particles.push(new Particle(x, y, vx, vy, colorItem.color));
+                const color = colorItem ? colorItem.color : '#00ff88';
+                particles.push(new Particle(x, y, vx, vy, color));
             }
         }
 
@@ -873,7 +869,7 @@
                 const speed = Math.random() * 8 + 4;
                 const vx = Math.cos(angle) * speed;
                 const vy = Math.sin(angle) * speed;
-                particles.push(new Particle(x, y, vx, vy, 'rgb(255, 68, 68)'));
+                particles.push(new Particle(x, y, vx, vy, '#ff4444'));
             }
         }
 
@@ -901,8 +897,8 @@
                     const isSelected = gameState.ballCustomization[category === 'colors' ? 'color' : category === 'patterns' ? 'pattern' : 'effect'] === item.id;
                     
                     const itemEl = document.createElement('div');
-                    itemEl.className = `shop-item ${isOwned ? 'owned' : ''} ${isSelected ? 'selected' : ''}`;
-                    itemEl.style.borderColor = isSelected ? '#00ff88' : isOwned ? '#667eea' : '#667eea';
+                    itemEl.className = `shop-item ${isOwned ? 'owned' : ''}`;
+                    itemEl.style.borderColor = isSelected ? '#00ff88' : '#667eea';
                     
                     itemEl.innerHTML = `
                         <div class="shop-item-preview">${item.emoji}</div>
@@ -914,9 +910,9 @@
                     
                     itemEl.addEventListener('click', () => {
                         if (isOwned || item.cost === 0) {
-                            selectItem(category, item.id, item);
+                            selectItem(category, item.id);
                         } else if (gameState.coins >= item.cost) {
-                            purchaseItem(category, item.id, item.cost, item);
+                            purchaseItem(category, item.id, item.cost, item.name);
                         }
                     });
                     
@@ -925,26 +921,26 @@
             });
         }
 
-        function selectItem(category, itemId, item) {
+        function selectItem(category, itemId) {
             const key = category === 'colors' ? 'color' : category === 'patterns' ? 'pattern' : 'effect';
             gameState.ballCustomization[key] = itemId;
             localStorage.setItem(`ball${key.charAt(0).toUpperCase() + key.slice(1)}`, itemId);
             initializeShop();
         }
 
-        function purchaseItem(category, itemId, cost, item) {
+        function purchaseItem(category, itemId, cost, itemName) {
             gameState.coins -= cost;
             localStorage.setItem('coins', gameState.coins);
             
-            if (!gameState.ownedItems[category]) gameState.ownedItems[category] = [];
-            gameState.ownedItems[category].push(itemId);
+            if (!gameState.ownedItems[category].includes(itemId)) {
+                gameState.ownedItems[category].push(itemId);
+            }
             localStorage.setItem('ownedItems', JSON.stringify(gameState.ownedItems));
             
             document.getElementById('coinsDisplay').textContent = `💰 ${Math.floor(gameState.coins)}`;
             
-            selectItem(category, itemId, item);
-            
-            showPurchaseNotification(`Purchased ${item.name}!`);
+            selectItem(category, itemId);
+            showPurchaseNotification(`Purchased ${itemName}!`);
         }
 
         function openShop() {
@@ -995,7 +991,7 @@
             document.getElementById('coinsDisplay').style.display = 'block';
 
             const earnedCoins = Math.floor(gameState.score * CONFIG.COINS_PER_POINT);
-            gameState.coins = parseFloat(gameState.coins) + earnedCoins;
+            gameState.coins += earnedCoins;
             localStorage.setItem('coins', gameState.coins);
             document.getElementById('coinsDisplay').textContent = `💰 ${Math.floor(gameState.coins)}`;
 
@@ -1017,7 +1013,7 @@
             e.preventDefault();
             if (!gameState.isRunning) {
                 startGame();
-            } else if (ball.isAlive) {
+            } else if (ball && ball.isAlive) {
                 ball.bounce();
             }
         }
@@ -1033,8 +1029,7 @@
                 const levelUpEl = document.createElement('div');
                 levelUpEl.className = 'level-up';
                 levelUpEl.textContent = `LEVEL ${level}!`;
-                const overlay = document.querySelector('.ui-overlay');
-                overlay.appendChild(levelUpEl);
+                document.querySelector('.ui-overlay').appendChild(levelUpEl);
 
                 setTimeout(() => levelUpEl.remove(), 800);
 
@@ -1069,8 +1064,10 @@
 
             gameState.elapsedTime = Date.now() - gameStartTime;
 
-            ball.update();
-            ball.draw();
+            if (ball) {
+                ball.update();
+                ball.draw();
+            }
 
             for (let spike of spikes) {
                 spike.update();
@@ -1088,7 +1085,7 @@
             applyScreenShake();
             updateUI();
 
-            if (!ball.isAlive) {
+            if (!ball || !ball.isAlive) {
                 endGame();
                 return;
             }
@@ -1100,10 +1097,6 @@
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
         });
-
-        if (typeof gameState.coins === 'string') {
-            gameState.coins = parseFloat(gameState.coins);
-        }
 
         updateUI();
         loop();
