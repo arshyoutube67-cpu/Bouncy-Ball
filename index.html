@@ -281,6 +281,7 @@
         }
 
         .shop-panel {
+            position: relative;
             background: linear-gradient(135deg, #1a1f3a 0%, #0f1229 100%);
             border: 2px solid #667eea;
             border-radius: 20px;
@@ -440,6 +441,75 @@
             100% { transform: translate(-50%, -50%) scale(1); }
         }
 
+        /* ---------- Admin panel ---------- */
+        .admin-tag {
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.25);
+            font-size: 10px;
+            letter-spacing: 1px;
+            z-index: 11;
+            pointer-events: none;
+        }
+        .admin-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 400;
+            pointer-events: all;
+        }
+        .admin-overlay.show { display: flex; }
+        .admin-panel {
+            background: linear-gradient(135deg, #2a0f0f 0%, #1a0505 100%);
+            border: 2px solid #ff4444;
+            border-radius: 16px;
+            padding: 24px;
+            width: 280px;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .admin-title {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            color: #ff4444;
+            text-shadow: 0 0 10px #ff4444;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+        .admin-btn {
+            background: rgba(255,68,68,0.12);
+            border: 1px solid #ff4444;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        .admin-btn:hover { background: rgba(255,68,68,0.25); }
+        .admin-btn.active { background: #ff4444; color: #000; }
+        .admin-btn.danger { border-color: #ff8800; }
+        .admin-btn.danger:hover { background: rgba(255,136,0,0.25); }
+        .admin-close {
+            margin-top: 6px;
+            background: #333;
+            border: none;
+            color: #fff;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
         @media (max-width: 600px) {
             .score-value { font-size: 28px; }
             .game-over-title { font-size: 36px; }
@@ -464,6 +534,7 @@
             </div>
             <div class="difficulty-indicator" id="difficulty">Level 1</div>
             <div class="instruction" id="instruction">TAP TO START</div>
+            <div class="admin-tag">admin panel: press `</div>
             <button class="shop-button" id="shopButton" style="display: none;">🛍️</button>
         </div>
 
@@ -474,26 +545,46 @@
             <div class="new-best" id="newBest" style="display: none;">🎉 NEW BEST!</div>
             <div id="earnedCoins" style="font-size: 20px; color: #ffaa00; margin-bottom: 20px; display: none;"></div>
             <button class="restart-btn" id="restartBtn">Play Again</button>
-            <button class="shop-btn" id="shopBtnGameOver">Customize Ball</button>
+            <button class="shop-btn" id="shopBtnGameOver">Customize</button>
         </div>
     </div>
 
     <div class="shop-overlay" id="shopOverlay">
-        <button class="shop-close" id="shopClose">✕</button>
         <div class="shop-panel">
-            <div class="shop-title">⚪ BALL SHOP</div>
+            <button class="shop-close" id="shopClose">✕</button>
+            <div class="shop-title">⚪ CUSTOMIZE</div>
             <div class="shop-category">
-                <div class="shop-category-title">Colors</div>
+                <div class="shop-category-title">Ball Colors</div>
                 <div class="shop-items" id="colorItems"></div>
             </div>
             <div class="shop-category">
-                <div class="shop-category-title">Patterns</div>
+                <div class="shop-category-title">Ball Patterns</div>
                 <div class="shop-items" id="patternItems"></div>
             </div>
             <div class="shop-category">
-                <div class="shop-category-title">Effects</div>
+                <div class="shop-category-title">Ball Effects</div>
                 <div class="shop-items" id="effectItems"></div>
             </div>
+            <div class="shop-category">
+                <div class="shop-category-title">Spike Skins</div>
+                <div class="shop-items" id="spikeColorItems"></div>
+            </div>
+            <div class="shop-category">
+                <div class="shop-category-title">Backgrounds</div>
+                <div class="shop-items" id="backgroundItems"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-overlay" id="adminOverlay">
+        <div class="admin-panel">
+            <div class="admin-title">⚙️ ADMIN PANEL</div>
+            <button class="admin-btn" id="adminCoins">+1000 Coins</button>
+            <button class="admin-btn" id="adminUnlock">Unlock All Items</button>
+            <button class="admin-btn" id="adminGod">God Mode: OFF</button>
+            <button class="admin-btn" id="adminSkip">Skip Level (in-run)</button>
+            <button class="admin-btn danger" id="adminReset">Reset All Progress</button>
+            <button class="admin-close" id="adminClose">Close</button>
         </div>
     </div>
 
@@ -522,7 +613,32 @@
                 { id: 'spin', name: 'Spin', emoji: '🌀', cost: 90 },
                 { id: 'sparkle', name: 'Sparkle', emoji: '⭐', cost: 110 },
                 { id: 'shadow', name: 'Shadow', emoji: '👻', cost: 85 },
+            ],
+            spikeColors: [
+                { id: 'classic', name: 'Classic Red', emoji: '🔺', cost: 0, colors: ['#ff4444', '#ff2222', '#cc0000'], stroke: '#ff7777' },
+                { id: 'toxic', name: 'Toxic Green', emoji: '☣️', cost: 70, colors: ['#88ff66', '#44cc33', '#227711'], stroke: '#aaffaa' },
+                { id: 'electric', name: 'Electric Blue', emoji: '🔷', cost: 70, colors: ['#77ccff', '#3399ff', '#0055aa'], stroke: '#aeeaff' },
+                { id: 'shadow', name: 'Shadow Black', emoji: '⬛', cost: 90, colors: ['#777777', '#333333', '#111111'], stroke: '#999999' },
+                { id: 'gold', name: 'Golden Hazard', emoji: '🟨', cost: 120, colors: ['#ffe066', '#ffb300', '#cc8400'], stroke: '#fff2b0' },
+                { id: 'violet', name: 'Void Violet', emoji: '🟪', cost: 120, colors: ['#c07bff', '#8a2be2', '#4b0082'], stroke: '#e0c3ff' },
+            ],
+            backgrounds: [
+                { id: 'navy', name: 'Deep Navy', emoji: '🌌', cost: 0, top: '#0a0e27', bottom: '#0a0e27', grid: 'rgba(102,126,234,0.1)' },
+                { id: 'sunset', name: 'Sunset', emoji: '🌅', cost: 80, top: '#2b0a3d', bottom: '#7a1e3d', grid: 'rgba(255,140,90,0.15)' },
+                { id: 'ocean', name: 'Ocean Depths', emoji: '🌊', cost: 80, top: '#012030', bottom: '#024959', grid: 'rgba(0,200,255,0.12)' },
+                { id: 'forest', name: 'Forest', emoji: '🌲', cost: 80, top: '#0b2b13', bottom: '#14401f', grid: 'rgba(120,255,150,0.12)' },
+                { id: 'void', name: 'The Void', emoji: '⬛', cost: 130, top: '#000000', bottom: '#050505', grid: 'rgba(255,255,255,0.05)' },
+                { id: 'magma', name: 'Magma', emoji: '🌋', cost: 130, top: '#1a0500', bottom: '#4d1200', grid: 'rgba(255,120,0,0.15)' },
             ]
+        };
+
+        // Maps each shop category to where it lives in gameState + localStorage
+        const CATEGORY_CONFIG = {
+            colors:       { containerId: 'colorItems',       field: 'color',      storageKey: 'ballColor' },
+            patterns:     { containerId: 'patternItems',     field: 'pattern',    storageKey: 'ballPattern' },
+            effects:      { containerId: 'effectItems',      field: 'effect',     storageKey: 'ballEffect' },
+            spikeColors:  { containerId: 'spikeColorItems',  field: 'spikeColor', storageKey: 'spikeColor' },
+            backgrounds:  { containerId: 'backgroundItems',  field: 'background', storageKey: 'background' }
         };
 
         const CONFIG = {
@@ -552,21 +668,31 @@
                 color: localStorage.getItem('ballColor') || 'green',
                 pattern: localStorage.getItem('ballPattern') || 'solid',
                 effect: localStorage.getItem('ballEffect') || 'none',
+                spikeColor: localStorage.getItem('spikeColor') || 'classic',
+                background: localStorage.getItem('background') || 'navy',
             },
             ownedItems: {
                 colors: ['green'],
                 patterns: ['solid'],
-                effects: ['none']
+                effects: ['none'],
+                spikeColors: ['classic'],
+                backgrounds: ['navy'],
             }
         };
+
+        // Admin/cheat state (not persisted)
+        let adminState = { godMode: false };
 
         // Load owned items from localStorage
         let savedOwned = localStorage.getItem('ownedItems');
         if (savedOwned) {
             try {
-                gameState.ownedItems = JSON.parse(savedOwned);
+                const parsed = JSON.parse(savedOwned);
+                gameState.ownedItems = Object.assign({}, gameState.ownedItems, parsed);
+                if (!gameState.ownedItems.spikeColors) gameState.ownedItems.spikeColors = ['classic'];
+                if (!gameState.ownedItems.backgrounds) gameState.ownedItems.backgrounds = ['navy'];
             } catch(e) {
-                gameState.ownedItems = { colors: ['green'], patterns: ['solid'], effects: ['none'] };
+                // keep defaults
             }
         }
 
@@ -580,6 +706,12 @@
         let particles = [];
         let gameStartTime = 0;
         let ballTrail = [];
+
+        function getSelectedItem(category){
+            const field = CATEGORY_CONFIG[category].field;
+            const id = gameState.ballCustomization[field];
+            return SHOP_ITEMS[category].find(i => i.id === id) || SHOP_ITEMS[category][0];
+        }
 
         // Initialize UI
         document.getElementById('bestScore').textContent = gameState.bestScore;
@@ -636,11 +768,13 @@
                     this.isAlive = false;
                 }
 
-                for (let spike of spikes) {
-                    if (this.collidesWith(spike)) {
-                        this.isAlive = false;
-                        createExplosion(this.x, this.y);
-                        triggerScreenShake();
+                if (!adminState.godMode) {
+                    for (let spike of spikes) {
+                        if (this.collidesWith(spike)) {
+                            this.isAlive = false;
+                            createExplosion(this.x, this.y);
+                            triggerScreenShake();
+                        }
                     }
                 }
             }
@@ -674,8 +808,7 @@
                     }
                 }
 
-                const colorItem = SHOP_ITEMS.colors.find(c => c.id === gameState.ballCustomization.color);
-                const ballColor = colorItem ? colorItem.color : '#00ff88';
+                const ballColor = getSelectedItem('colors').color;
 
                 if (gameState.ballCustomization.effect === 'shadow') {
                     ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
@@ -799,14 +932,16 @@
             }
 
             draw() {
+                const skin = getSelectedItem('spikeColors');
+
                 ctx.save();
                 ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
                 ctx.rotate(this.rotation);
 
                 const gradient = ctx.createLinearGradient(0, -this.height / 2, 0, this.height / 2);
-                gradient.addColorStop(0, '#ff4444');
-                gradient.addColorStop(0.5, '#ff2222');
-                gradient.addColorStop(1, '#cc0000');
+                gradient.addColorStop(0, skin.colors[0]);
+                gradient.addColorStop(0.5, skin.colors[1]);
+                gradient.addColorStop(1, skin.colors[2]);
                 ctx.fillStyle = gradient;
 
                 ctx.beginPath();
@@ -816,7 +951,7 @@
                 ctx.closePath();
                 ctx.fill();
 
-                ctx.strokeStyle = '#ff7777';
+                ctx.strokeStyle = skin.stroke;
                 ctx.lineWidth = 2;
                 ctx.stroke();
                 ctx.restore();
@@ -857,8 +992,7 @@
                 const angle = (i / 8) * Math.PI * 2;
                 const vx = Math.cos(angle) * 4;
                 const vy = Math.sin(angle) * 4;
-                const colorItem = SHOP_ITEMS.colors.find(c => c.id === gameState.ballCustomization.color);
-                const color = colorItem ? colorItem.color : '#00ff88';
+                const color = getSelectedItem('colors').color;
                 particles.push(new Particle(x, y, vx, vy, color));
             }
         }
@@ -888,18 +1022,18 @@
         }
 
         function initializeShop() {
-            const categories = ['colors', 'patterns', 'effects'];
-            categories.forEach(category => {
-                const container = document.getElementById(`${category}Items`);
+            Object.keys(CATEGORY_CONFIG).forEach(category => {
+                const cfg = CATEGORY_CONFIG[category];
+                const container = document.getElementById(cfg.containerId);
                 container.innerHTML = '';
                 SHOP_ITEMS[category].forEach(item => {
                     const isOwned = gameState.ownedItems[category].includes(item.id);
-                    const isSelected = gameState.ballCustomization[category === 'colors' ? 'color' : category === 'patterns' ? 'pattern' : 'effect'] === item.id;
-                    
+                    const isSelected = gameState.ballCustomization[cfg.field] === item.id;
+
                     const itemEl = document.createElement('div');
                     itemEl.className = `shop-item ${isOwned ? 'owned' : ''}`;
                     itemEl.style.borderColor = isSelected ? '#00ff88' : '#667eea';
-                    
+
                     itemEl.innerHTML = `
                         <div class="shop-item-preview">${item.emoji}</div>
                         <div class="shop-item-name">${item.name}</div>
@@ -907,7 +1041,7 @@
                             ${isOwned ? '<span class="owned-badge">OWNED</span>' : `💰 ${item.cost}`}
                         </div>
                     `;
-                    
+
                     itemEl.addEventListener('click', () => {
                         if (isOwned || item.cost === 0) {
                             selectItem(category, item.id);
@@ -915,30 +1049,30 @@
                             purchaseItem(category, item.id, item.cost, item.name);
                         }
                     });
-                    
+
                     container.appendChild(itemEl);
                 });
             });
         }
 
         function selectItem(category, itemId) {
-            const key = category === 'colors' ? 'color' : category === 'patterns' ? 'pattern' : 'effect';
-            gameState.ballCustomization[key] = itemId;
-            localStorage.setItem(`ball${key.charAt(0).toUpperCase() + key.slice(1)}`, itemId);
+            const cfg = CATEGORY_CONFIG[category];
+            gameState.ballCustomization[cfg.field] = itemId;
+            localStorage.setItem(cfg.storageKey, itemId);
             initializeShop();
         }
 
         function purchaseItem(category, itemId, cost, itemName) {
             gameState.coins -= cost;
             localStorage.setItem('coins', gameState.coins);
-            
+
             if (!gameState.ownedItems[category].includes(itemId)) {
                 gameState.ownedItems[category].push(itemId);
             }
             localStorage.setItem('ownedItems', JSON.stringify(gameState.ownedItems));
-            
+
             document.getElementById('coinsDisplay').textContent = `💰 ${Math.floor(gameState.coins)}`;
-            
+
             selectItem(category, itemId);
             showPurchaseNotification(`Purchased ${itemName}!`);
         }
@@ -1020,7 +1154,7 @@
 
         function updateUI() {
             document.getElementById('score').textContent = gameState.score;
-            
+
             const level = Math.floor(gameState.elapsedTime / CONFIG.DIFFICULTY_INTERVAL) + 1;
             if (level !== gameState.level) {
                 gameState.level = level;
@@ -1044,10 +1178,14 @@
         function loop() {
             if (!gameState.isRunning) return;
 
-            ctx.fillStyle = '#0a0e27';
+            const bg = getSelectedItem('backgrounds');
+            const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            bgGradient.addColorStop(0, bg.top);
+            bgGradient.addColorStop(1, bg.bottom);
+            ctx.fillStyle = bgGradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            ctx.strokeStyle = 'rgba(102, 126, 234, 0.1)';
+            ctx.strokeStyle = bg.grid;
             ctx.lineWidth = 1;
             for (let i = 0; i < canvas.width; i += 50) {
                 ctx.beginPath();
@@ -1096,6 +1234,51 @@
         window.addEventListener('resize', () => {
             canvas.width = canvas.offsetWidth;
             canvas.height = canvas.offsetHeight;
+        });
+
+        /* ---------------- Admin panel wiring ---------------- */
+        function toggleAdminPanel() {
+            document.getElementById('adminOverlay').classList.toggle('show');
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Backquote') {
+                e.preventDefault();
+                toggleAdminPanel();
+            }
+        });
+        document.getElementById('adminClose').addEventListener('click', toggleAdminPanel);
+        document.getElementById('adminOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'adminOverlay') toggleAdminPanel();
+        });
+        document.getElementById('adminCoins').addEventListener('click', () => {
+            gameState.coins += 1000;
+            localStorage.setItem('coins', gameState.coins);
+            document.getElementById('coinsDisplay').textContent = `💰 ${Math.floor(gameState.coins)}`;
+            showPurchaseNotification('+1000 Coins!');
+        });
+        document.getElementById('adminUnlock').addEventListener('click', () => {
+            Object.keys(SHOP_ITEMS).forEach(cat => {
+                gameState.ownedItems[cat] = SHOP_ITEMS[cat].map(i => i.id);
+            });
+            localStorage.setItem('ownedItems', JSON.stringify(gameState.ownedItems));
+            initializeShop();
+            showPurchaseNotification('All items unlocked!');
+        });
+        document.getElementById('adminGod').addEventListener('click', (e) => {
+            adminState.godMode = !adminState.godMode;
+            e.target.textContent = `God Mode: ${adminState.godMode ? 'ON' : 'OFF'}`;
+            e.target.classList.toggle('active', adminState.godMode);
+        });
+        document.getElementById('adminSkip').addEventListener('click', () => {
+            if (gameState.isRunning) {
+                gameStartTime -= CONFIG.DIFFICULTY_INTERVAL;
+            }
+        });
+        document.getElementById('adminReset').addEventListener('click', () => {
+            if (confirm('Reset all progress? This clears coins, best score, and unlocked items.')) {
+                localStorage.clear();
+                location.reload();
+            }
         });
 
         updateUI();
